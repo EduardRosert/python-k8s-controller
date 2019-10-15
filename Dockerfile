@@ -27,5 +27,3 @@ COPY ./controller.py /
 
 # show the help file
 CMD python ./controller.py --help
-
-#kubectl run -i --tty python-k8s-controller --image=eduardrosert/python-k8s-controller --restart=Never -- sh 
