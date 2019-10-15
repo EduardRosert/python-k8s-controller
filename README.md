@@ -2,7 +2,7 @@
 A python tool that allows you to manage deployments and services in you kubernetes cluster.
 
 
-Usage:
+# Usage
 ```
 usage: controller.py [-h] [--namespace NAMESPACE] [--deployment-name NAME]
                      [--trigger-rollout] [--duplicate]
@@ -87,4 +87,10 @@ Example usage:
                              --label-selector app=my-app \
                              --trigger-smart-rollout
                              --no-cleanup
+```
+
+# Run in Kubernetes
+If you want to run this application interactively in your kubernetes cluster/ or your minikube installation:
+```bash
+kubectl run -i --tty python-k8s-controller --image=eduardrosert/python-k8s-controller --restart=Never -- sh 
 ```
