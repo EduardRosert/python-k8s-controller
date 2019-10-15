@@ -1,6 +1,80 @@
 # python-k8s-controller
 A python tool that allows you to manage deployments and services in you kubernetes cluster.
 
+# Installation
+
+## Set up Kubernetes
+You need to configure you kubernetes RBAC to run this script.
+Examples are given below. Make sure to change names and 
+namespaces to suit your needs:
+
+File: ``cluster-role.yaml``
+```
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: python-k8s-controller
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list", "watch"]
+- apiGroups: ["extensions"]
+  resources: ["deployments"]
+  verbs: ["list", "watch", "patch", "create", "delete"]
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["list", "patch"]
+```
+
+File: ``cluster-role-binding.yaml``
+```
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: python-k8s-controller
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: <your namespace, for production don't use 'default', set up a custom namespace>
+roleRef:
+  kind: ClusterRole
+  name: python-k8s-controller
+  apiGroup: rbac.authorization.k8s.io
+```
+
+Configure your cluster with the above role and binding
+by saving the configuration to a yaml file, adapt the 
+``namespace`` of the binding to your needs and then run:
+```bash
+kubectl apply -f cluster-role.yaml
+kubectl apply -f cluster-role-binding.yaml
+```
+
+## Run using docker
+If you want to run this application interactively using docker:
+
+```bash
+# display help
+docker run --rm -i -t eduardrosert/python-k8s-controller python controller.py --help
+```
+
+```bash
+# open interactive shell
+docker run --rm -i -t eduardrosert/python-k8s-controller sh
+```
+
+## Run using kubernetes
+If you want to run this application interactively in your kubernetes cluster/ or your minikube installation:
+
+```bash
+# display help
+kubectl run -i --tty python-k8s-controller --image=eduardrosert/python-k8s-controller --restart=Never -- python controller.py --help
+```
+
+```bash
+# open interactive shell
+kubectl run -i --tty python-k8s-controller --image=eduardrosert/python-k8s-controller --restart=Never -- sh 
+```
 
 # Usage
 ```
@@ -89,8 +163,3 @@ Example usage:
                              --no-cleanup
 ```
 
-# Run in Kubernetes
-If you want to run this application interactively in your kubernetes cluster/ or your minikube installation:
-```bash
-kubectl run -i --tty python-k8s-controller --image=eduardrosert/python-k8s-controller --restart=Never -- sh 
-```
