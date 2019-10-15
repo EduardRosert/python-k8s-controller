@@ -39,7 +39,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: default
-  namespace: <your namespace, e.g. 'default'>
+  namespace: <your namespace, for production don't use 'default', set up a custom namespace>
 roleRef:
   kind: ClusterRole
   name: python-k8s-controller
