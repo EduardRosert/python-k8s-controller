@@ -17,8 +17,9 @@ build:
 
 login:
 	@docker login
-	@# or
-	@# @docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+
+login-user-pass:
+	@docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
 push: login
 	@docker push ${NAME}
