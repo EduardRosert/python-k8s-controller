@@ -1,4 +1,4 @@
-FROM python:3.7-alpine as base
+FROM python:3.8-alpine as base
 
 # Docker multistage build to obtain
 # a minimal image
@@ -11,7 +11,7 @@ WORKDIR /install
 COPY requirements.txt /
 
 RUN pip install \
-        --install-option="--prefix=/install" \
+        --prefix=/install \
         -r /requirements.txt
 
 # -------------------
