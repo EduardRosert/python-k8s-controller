@@ -131,20 +131,14 @@ def getDeploymentPatchBody( creationTimestamp = datetime.datetime.utcnow() ):
 
 def load_k8s_config(config_file=None):
     """ loads kubernetes configuration from the given config_file or on a best effort basis"""
-    
-    if not config_file is None:
-        # load configuration from the given config file
-        log.debug("Loading Kubernetes configuration from file '%s'\n"%(config_file))
-        config.load_kube_config(config_file=config_file)
-    elif not path.exists('/.dockerenv'):
-        # load configuration from the current user's home directory
-        config_file = '/home/%s/.kube/config_liberty' % (getpwuid(getuid()).pw_name)
-        log.debug("No configuration file provided. Could not find '/.dockerenv' directory, so assuming this script runs outside of a kubernetes cluster. Trying to load the current user's Kubernetes configuration from file '%s'\n"%(config_file))
-        config.load_kube_config(config_file=config_file)
-    else:
+
+    if path.exists('/.dockerenv'):
         # assume this script runs inside a pod in your kubernetes cluster
         log.debug("'/.dockerenv' directory detected. Assuming this script runs in pod on your kubernetes cluster. Loading the 'incluster' Kubernetes configuration.\n")
         config.load_incluster_config()
+    else:
+        log.debug(f"Loading Kubernetes configuration from file '{config_file}'\n")
+        config.load_kube_config(config_file=config_file)
 
 def restart_namespaced_deployment(name, namespace="default", extv1Client=None):
     """ Forces a restart of all pods of a deployment by updating the creationTimestamp """
@@ -152,7 +146,7 @@ def restart_namespaced_deployment(name, namespace="default", extv1Client=None):
         # load the kubernetes config
         load_k8s_config()
         #create the api client
-        extv1Client=client.ExtensionsV1beta1Api()
+        extv1Client=client.AppsV1Api()
 
     # this is a trick to force a redeployment of all pods
     # simply by changing the pod's creation timestamp
@@ -193,7 +187,7 @@ def get_namespaced_deployment(name, namespace="default", extv1Client=None):
         # load the kubernetes config
         load_k8s_config()
         #create the api client
-        extv1Client=client.ExtensionsV1beta1Api()
+        extv1Client=client.CoreV1Api()
 
     deploymentList = None
     try:
@@ -215,7 +209,7 @@ def get_namespaced_deployments(label_selector, namespace="default", extv1Client=
         # load the kubernetes config
         load_k8s_config()
         #create the api client
-        extv1Client=client.ExtensionsV1beta1Api()
+        extv1Client=client.AppsV1Api()
 
     deploymentList = None
     try:
